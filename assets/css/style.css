@@ -801,9 +801,31 @@ body.nav-active { overflow: hidden; }
   margin-right: 20px;
 }
 
-.slider-list::-webkit-scrollbar { display: none; }
+.slider-list::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
+}
+
+.slider-list::-webkit-scrollbar-track {
+  background: linear-gradient(45deg, #333333, #999999); /* Gradient background for the track */
+  border-radius: 3px; /* Rounded corners for the track */
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* Inner shadow for a recessed effect */
+}
+
+.slider-list::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #808080, #cccccc); /* Gradient background for the thumb */
+  border-radius: 3px; /* Rounded corners for the thumb */
+  box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3); /* Inner shadow for the thumb */
+  transition: background 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for background and shadow changes */
+}
+
+.slider-list::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #cccccc, #808080); /* Reverse gradient for hover effect */
+  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.5); /* Enhanced inner shadow on hover */
+}
+
 
 .slider-item {
+  margin-bottom: 20px;
   min-width: 100%;
   scroll-snap-align: start;
 }
