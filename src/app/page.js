@@ -196,14 +196,11 @@ export default function Home() {
               <div className="world-grid">
                 <div className="world-card invoxio-zone" id="invoxio">
                   <div className="zone-visual">
-                    <div className="zone-bg"></div>
-                    <div className="pixel-icon-wrap">
-                      <svg className="pixel-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7 11V13M11 11V13M15 11V13" stroke="currentColor" strokeWidth="2" />
-                        <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
-                      </svg>
+                      <div className="zone-bg"></div>
+                      <div className="pixel-icon-wrap">
+                        <img src="/assets/images/project-8.png" alt="Invoxio" className="project-thumb" />
+                      </div>
                     </div>
-                  </div>
                   <div className="zone-info">
                     <span className="zone-label">REAL-TIME MESSAGING APP</span>
                     <h3>Invoxio</h3>
@@ -212,21 +209,18 @@ export default function Home() {
                       <span>NEXT.JS</span><span>TYPESCRIPT</span><span>WEBSOCKETS</span><span>KAFKA</span><span>REDIS</span><span>DOCKER</span><span>PYTHON</span><span>FASTAPI</span>
                     </div>
                     <a href="https://invoxio.vercel.app" target="_blank" rel="noreferrer" className="nintendo-btn blue small">
-                      <span className="btn-inner">VIEW REPO</span>
+                      <span className="btn-inner">LIVE WEBSITE</span>
                     </a>
                   </div>
                 </div>
 
                 <div className="world-card dilemma-zone" id="dilemma">
                   <div className="zone-visual">
-                    <div className="zone-bg"></div>
-                    <div className="pixel-icon-wrap">
-                      <svg className="pixel-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 4H20V20H4V4Z" stroke="currentColor" strokeWidth="2" />
-                        <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" />
-                      </svg>
+                      <div className="zone-bg"></div>
+                      <div className="pixel-icon-wrap">
+                        <img src="/assets/images/dilemma.png" alt="Dilemma" className="project-thumb" />
+                      </div>
                     </div>
-                  </div>
                   <div className="zone-info">
                     <span className="zone-label">AI-MODERATED SOCIAL PLATFORM</span>
                     <h3>Dilemma</h3>
@@ -235,21 +229,18 @@ export default function Home() {
                       <span>NEXT.JS 14</span><span>PRISMA</span><span>POSTGRESQL</span><span>AI APIs</span><span>TAILWIND</span><span>NODE.JS</span>
                     </div>
                     <a href="https://dilemmaa.vercel.app" target="_blank" rel="noreferrer" className="nintendo-btn yellow small">
-                      <span className="btn-inner">VIEW REPO</span>
+                      <span className="btn-inner">LIVE WEBSITE</span>
                     </a>
                   </div>
                 </div>
 
                 <div className="world-card nilam-zone" id="nilam">
                   <div className="zone-visual">
-                    <div className="zone-bg"></div>
-                    <div className="pixel-icon-wrap">
-                      <svg className="pixel-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L4 7V17L12 22L20 17V7L12 2Z" stroke="currentColor" strokeWidth="2" />
-                        <path d="M12 6L16 8.5V13.5L12 16L8 13.5V8.5L12 6Z" fill="currentColor" />
-                      </svg>
+                      <div className="zone-bg"></div>
+                      <div className="pixel-icon-wrap">
+                        <img src="/assets/images/project-9.png" alt="Nilam3" className="project-thumb" />
+                      </div>
                     </div>
-                  </div>
                   <div className="zone-info">
                     <span className="zone-label">BLOCKCHAIN-BASED AUCTION</span>
                     <h3>Nilam3</h3>
@@ -258,7 +249,7 @@ export default function Home() {
                       <span>SOLIDITY</span><span>HARDHAT</span><span>ETHEREUM</span><span>WEB3.JS</span><span>NEXT.JS</span><span>PRISMA</span>
                     </div>
                     <a href="https://nilam3.vercel.app/" target="_blank" rel="noreferrer" className="nintendo-btn cyan small">
-                      <span className="btn-inner">VIEW REPO</span>
+                      <span className="btn-inner">LIVE WEBSITE</span>
                     </a>
                   </div>
                 </div>
