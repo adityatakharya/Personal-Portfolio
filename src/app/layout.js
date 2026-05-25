@@ -8,7 +8,7 @@ export const metadata = {
   title: "Aditya Takharya | Application Engineer & Systems Architect",
   description: "Portfolio of Aditya Takharya, Full Stack Application Engineer I",
   icons: {
-    icon: "/assets/images/favicon1.png",
+    icon: "/assets/images/favicon.svg",
   },
 };
 
