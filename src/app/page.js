@@ -1,17 +1,32 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState('');
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.classList.add('ai-modal-open');
+    } else {
+      document.body.classList.remove('ai-modal-open');
+    }
+    return () => document.body.classList.remove('ai-modal-open');
+  }, [isModalOpen]);
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleSearch = async () => {
     if (!query.trim() || loading) return;
     setLoading(true);
     setError('');
     setResponse('');
+    setIsModalOpen(true);
 
     try {
       console.log('[AI Client] Sending query to /api/chat...');
@@ -47,6 +62,42 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  // Basic, safe markdown-like renderer for AI responses.
+  // - Escapes HTML
+  // - Converts triple-backtick blocks to <pre><code>
+  // - Converts inline `code` to <code>
+  // - Converts **bold** to <strong>
+  // - Preserves line breaks
+  function renderAIResponse(raw) {
+    if (!raw) return '';
+    // escape HTML
+    const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    let out = String(raw);
+
+    // code blocks ```
+    out = out.replace(/```([\s\S]*?)```/g, (m, code) => `<pre><code>${esc(code)}</code></pre>`);
+    // inline code `code`
+    out = out.replace(/`([^`]+)`/g, (m, code) => `<code>${esc(code)}</code>`);
+    // bold **text** -> <strong>
+    out = out.replace(/\*\*([^*]+)\*\*/g, (m, t) => `<strong>${esc(t)}</strong>`);
+    // escape remaining HTML and restore tags we intentionally added
+    out = esc(out)
+      .replace(/&lt;pre&gt;/g, '<pre>')
+      .replace(/&lt;\/pre&gt;/g, '</pre>')
+      .replace(/&lt;code&gt;/g, '<code>')
+      .replace(/&lt;\/code&gt;/g, '</code>')
+      .replace(/&lt;strong&gt;/g, '<strong>')
+      .replace(/&lt;\/strong&gt;/g, '</strong>');
+
+    // convert double newlines to paragraph breaks, single newlines to <br>
+    out = out.replace(/\r/g, '');
+    out = out.replace(/\n{2,}/g, '</div><div>');
+    out = `<div>${out}</div>`;
+    out = out.replace(/\n/g, '<br/>');
+
+    return out;
+  }
 
   return (
     <>
@@ -121,8 +172,7 @@ export default function Home() {
         <a href="mailto:adityatakharya@gmail.com" className="mobile-nav-item secondary">Email</a>
       </div>
 
-      <div id="smooth-wrapper">
-        <div id="smooth-content">
+
           <section id="hero" className="hero-world">
             <div className="container hero-wrap">
               <div className="hero-float-content">
@@ -159,18 +209,6 @@ export default function Home() {
                       </span>
                     </button>
                   </div>
-                  {(loading || response || error) && (
-                    <div id="ai-response-box" className="ai-response-box" style={{ display: 'block' }}>
-                      {loading && (
-                        <div className="ai-loader" style={{ display: 'flex' }}>
-                          <div className="pixel-spinner"></div>
-                          <span>Searching Portfolio...</span>
-                        </div>
-                      )}
-                      {response && <div id="ai-response-text" style={{ fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--dark)', fontWeight: '600' }}>{response}</div>}
-                      {error && <div id="ai-response-text" style={{ color: error.includes('⏳') ? 'var(--dark)' : 'red', fontWeight: '600' }}>{error}</div>}
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="hero-environment">
@@ -375,12 +413,40 @@ export default function Home() {
               </div>
             </div>
           </footer>
-        </div>
-      </div>
 
       <div id="game-cursor" className="game-cursor">
         <div className="cursor-inner"></div>
       </div>
+
+      {isModalOpen && (
+        <div className="ai-modal-overlay" onClick={closeModal} data-lenis-prevent="true" onWheel={(e) => e.stopPropagation()}>
+          <div className="ai-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="ai-modal-header">
+              <div className="ai-modal-title">
+                {loading && (
+                  <div className="ai-loader" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <div className="pixel-spinner"></div>
+                    <span>SEARCHING PORTFOLIO...</span>
+                  </div>
+                )}
+                {!loading && (
+                  <span>AI INSIGHT</span>
+                )}
+              </div>
+              <button className="ai-modal-close" onClick={closeModal} aria-label="Close">✕</button>
+            </div>
+            <div className="ai-modal-body" data-lenis-prevent="true">
+              {response && (
+                <div
+                  className="ai-response-text"
+                  dangerouslySetInnerHTML={{ __html: renderAIResponse(response) }}
+                />
+              )}
+              {error && <div className="ai-response-text" style={{ color: error.includes('⏳') ? 'var(--dark)' : 'red' }}>{error}</div>}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

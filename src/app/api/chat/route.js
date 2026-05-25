@@ -89,7 +89,8 @@ Aditya is currently in a support + development role with a support-leaning focus
 Use the portfolio data exactly as provided. Do not invent details, do not assume facts, and do not add information not present in the portfolio data.
 If the portfolio data does not contain the requested information, respond exactly with: "I don't have that specific information in the portfolio data."
 Prefer concise, recruiter-friendly answers with technical depth, architecture, scalability, engineering impact, and reliability focus.
-Keep answers under 120 words by default. If the user explicitly requests a deep technical explanation (words like "explain", "architecture", "detailed", "breakdown"), answers may expand up to 180 words; never exceed 250 words.
+Request the assistant to keep answers within 720 characters by default. If the user explicitly requests a deep technical explanation (words like "explain", "architecture", "detailed", "breakdown"), allow up to 1200 characters. Under no circumstances should the assistant invent facts to satisfy length.
+Do NOT append meta commentary, status notes, or parenthetical summaries about response length, quotas, or formatting (for example: "(Default response length: 720 characters...)" ). Do not self-refer or explain internal constraints in the response.
 Avoid marketing fluff, hype, or generic exaggeration. Redirect unrelated questions politely to portfolio-relevant content.
 Include full portfolio context when needed, but do not repeat the entire data set verbatim.
 Portfolio data:
@@ -100,6 +101,7 @@ function getWordCount(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
+/*
 function getMaxTokens(query) {
   // Increase token budgets to reduce mid-sentence truncation while
   // keeping an upper bound to limit hallucinations and cost.
@@ -115,10 +117,11 @@ function getMaxTokens(query) {
   // Default simple Q&A budget
   return 220;
 }
+*/
 
 function sanitizeResponse(text) {
   // Lightweight sanitization to collapse excessive whitespace and strip
-  // trailing punctuation that may indicate a cut-off token.
+  // trailing punctuation and incomplete fragments.
   let cleaned = String(text || '')
     .trim()
     .replace(/\n{3,}/g, '\n\n');
@@ -160,9 +163,10 @@ export async function POST(req) {
     }
 
     const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
-    const maxTokens = getMaxTokens(query);
+    // Token budgeting is disabled so the model decides output length.
+    // const maxTokens = getMaxTokens(query);
 
-    console.log(`${logPrefix} Using model: ${GROQ_MODEL}, maxTokens: ${maxTokens}`);
+    console.log(`${logPrefix} Using model: ${GROQ_MODEL}`);
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -176,7 +180,6 @@ export async function POST(req) {
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: query }
         ],
-        max_tokens: maxTokens,
         temperature: 0.2,
         top_p: 0.9,
         frequency_penalty: 0.2,
@@ -197,12 +200,8 @@ export async function POST(req) {
     const finishReason = result.choices?.[0]?.finish_reason || null;
     const rawText = result.choices?.[0]?.message?.content || result.choices?.[0]?.text || '';
 
-    let text = sanitizeResponse(rawText);
-    // If model stopped because of token limits, indicate truncation.
-    if (finishReason === 'length' || finishReason === 'max_tokens' || finishReason === 'timeout') {
-      // Avoid double ellipsis
-      if (!text.endsWith('...')) text = `${text.trim()}...`;
-    }
+    // Do not modify or trim the model text beyond light sanitization.
+    const text = sanitizeResponse(rawText);
 
     console.log(`${logPrefix} Success. finish_reason=${finishReason}; Response length: ${text.length} chars.`);
     return NextResponse.json({ text });
