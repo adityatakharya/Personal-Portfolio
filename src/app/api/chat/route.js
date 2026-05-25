@@ -87,9 +87,9 @@ const SYSTEM_PROMPT = `
 You are an engineering-focused recruiter assistant for Aditya's portfolio.
 Aditya is currently in a support + development role with a support-leaning focus.
 Use the portfolio data exactly as provided. Do not invent details, do not assume facts, and do not add information not present in the portfolio data.
-If the portfolio data does not contain the requested information, respond with: "I don't have that specific information in the portfolio data."
+If the portfolio data does not contain the requested information, respond exactly with: "I don't have that specific information in the portfolio data."
 Prefer concise, recruiter-friendly answers with technical depth, architecture, scalability, engineering impact, and reliability focus.
-Default responses should stay within 50-80 words. If the question explicitly asks for deeper technical detail, answers may expand up to 180 words, but never exceed 250 words.
+Keep answers under 120 words by default. If the user explicitly requests a deep technical explanation (words like "explain", "architecture", "detailed", "breakdown"), answers may expand up to 180 words; never exceed 250 words.
 Avoid marketing fluff, hype, or generic exaggeration. Redirect unrelated questions politely to portfolio-relevant content.
 Include full portfolio context when needed, but do not repeat the entire data set verbatim.
 Portfolio data:
@@ -101,22 +101,32 @@ function getWordCount(text) {
 }
 
 function getMaxTokens(query) {
-  const q = query.toLowerCase();
-  if (
-    q.includes('architecture') ||
-    q.includes('explain') ||
-    q.includes('detailed') ||
-    q.includes('breakdown') ||
-    q.includes('scalability')
-  ) {
-    return 300;
+  // Increase token budgets to reduce mid-sentence truncation while
+  // keeping an upper bound to limit hallucinations and cost.
+  const q = String(query || '').toLowerCase();
+  if (q.includes('architecture') || q.includes('breakdown') || q.includes('scalability')) {
+    // Detailed architecture questions get the largest budget
+    return 450;
   }
-  return 140;
+  if (q.includes('stack') || q.includes('skills') || q.includes('tech')) {
+    // Tech/skills queries may require moderately larger answers
+    return 250;
+  }
+  // Default simple Q&A budget
+  return 220;
 }
 
 function sanitizeResponse(text) {
-  const cleaned = text.trim().replace(/\n{2,}/g, '\n');
-  return cleaned.length > 2200 ? `${cleaned.slice(0, 2200).trim()}...` : cleaned;
+  // Lightweight sanitization to collapse excessive whitespace and strip
+  // trailing punctuation that may indicate a cut-off token.
+  let cleaned = String(text || '')
+    .trim()
+    .replace(/\n{3,}/g, '\n\n');
+
+  // Remove trailing commas/semicolons/colons/dashes
+  cleaned = cleaned.replace(/[,;:\-]\s*$/, '');
+
+  return cleaned;
 }
 
 export async function POST(req) {
@@ -184,10 +194,17 @@ export async function POST(req) {
     }
 
     const result = await response.json();
+    const finishReason = result.choices?.[0]?.finish_reason || null;
     const rawText = result.choices?.[0]?.message?.content || result.choices?.[0]?.text || '';
-    const text = sanitizeResponse(rawText);
 
-    console.log(`${logPrefix} Success. Response length: ${text.length} chars.`);
+    let text = sanitizeResponse(rawText);
+    // If model stopped because of token limits, indicate truncation.
+    if (finishReason === 'length' || finishReason === 'max_tokens' || finishReason === 'timeout') {
+      // Avoid double ellipsis
+      if (!text.endsWith('...')) text = `${text.trim()}...`;
+    }
+
+    console.log(`${logPrefix} Success. finish_reason=${finishReason}; Response length: ${text.length} chars.`);
     return NextResponse.json({ text });
   } catch (error) {
     console.error(`${logPrefix} AI API Error:`, {
