@@ -59,7 +59,7 @@ window.initLoader = () => {
     onComplete() {
       document.body.classList.remove('is-loading');
       loader.style.display = 'none';
-      if (typeof initAnimations === 'function') initAnimations();
+      if (window.heroTl) window.heroTl.play();
     },
   });
 };
@@ -157,14 +157,14 @@ function initAnimations() {
   if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
   gsap.registerPlugin(ScrollTrigger);
 
-  // Hero entrance
-  const heroTl = gsap.timeline();
-  heroTl.from('.word-reveal', { y: 80, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'back.out(1.7)' })
+  // Hero entrance (paused initially, played after loader)
+  window.heroTl = gsap.timeline({ paused: true });
+  window.heroTl.from('.word-reveal', { y: 80, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'back.out(1.7)' })
     .from('.hero-subtitle', { y: 20, opacity: 0, duration: 0.7 }, '-=0.4')
     .from('.hero-buttons > *', { y: 20, opacity: 0, duration: 0.6, stagger: 0.1 }, '-=0.4');
 
   if (document.querySelector('.hero-platform')) {
-    heroTl.from('.hero-platform', { scale: 0.6, opacity: 0, duration: 1.4, ease: 'elastic.out(1, 0.5)' }, '-=0.8');
+    window.heroTl.from('.hero-platform', { scale: 0.6, opacity: 0, duration: 1.4, ease: 'elastic.out(1, 0.5)' }, '-=0.8');
   }
 
   // Project cards
@@ -189,6 +189,14 @@ function initAnimations() {
     scrollTrigger: { trigger: '.stats-board', start: 'top 88%' },
     y: 60, opacity: 0, duration: 0.8, stagger: 0.15, ease: 'power3.out',
   });
+}
+
+// Initialize animations immediately so GSAP records initial `from()` states 
+// (prevents flash of content before loader finishes).
+if (document.readyState === 'complete') {
+  initAnimations();
+} else {
+  window.addEventListener('DOMContentLoaded', initAnimations);
 }
 
 // ---------- MOUSE PARALLAX (desktop) ----------
