@@ -6,7 +6,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Aditya Takharya | Application Engineer & Systems Architect",
-  description: "Portfolio of Aditya Takharya, Full Stack Application Engineer I",
+  description:
+    "This is the portfolio of Aditya Takharya, a Full Stack Application Engineer and Systems Architect. Explore projects, skills, and achievements in distributed systems and high-performance engineering.",
   icons: {
     icon: "/assets/images/favicon.svg",
   },
@@ -23,6 +24,17 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
         <link rel="stylesheet" href="/assets/css/style.css" />
+        {/* Open Graph / Facebook Meta Tags */}
+        <meta property="og:title" content="Aditya Takharya | Application Engineer & Systems Architect" />
+        <meta property="og:description" content="This is the portfolio of Aditya Takharya, a Full Stack Application Engineer and Systems Architect. Explore projects, skills, and achievements in distributed systems and high-performance engineering." />
+        <meta property="og:image" content="/assets/images/meta-thumbnail.png" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://adityatakharya.com" />
+        {/* Twitter Meta Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Aditya Takharya | Application Engineer & Systems Architect" />
+        <meta name="twitter:description" content="This is the portfolio of Aditya Takharya, a Full Stack Application Engineer and Systems Architect. Explore projects, skills, and achievements in distributed systems and high-performance engineering." />
+        <meta name="twitter:image" content="/assets/images/meta-thumbnail.png" />
       </head>
       <body className={`${inter.className} is-loading`}>
         {children}
