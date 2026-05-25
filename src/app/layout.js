@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${inter.className} is-loading`}>
         {children}
+        <Analytics />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" strategy="beforeInteractive" />
         <Script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" strategy="beforeInteractive" />
         <Script src="https://unpkg.com/@studio-freight/lenis@1.0.34/dist/lenis.min.js" strategy="beforeInteractive" />
