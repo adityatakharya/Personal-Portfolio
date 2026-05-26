@@ -297,7 +297,7 @@ export default function Home() {
 
           <section id="tech" className="world-section tech-world">
             <div className="container">
-              <h2 className="world-title text-center">ITEM INVENTORY</h2>
+              <h2 className="world-title text-center">TECH INVENTORY</h2>
               <p className="world-desc text-center">Comprehensive technical stack curated for high-performance engineering.</p>
               <div className="inventory-grid">
                 <div className="inventory-category">
